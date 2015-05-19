@@ -6,6 +6,7 @@ var watchify = require('watchify');
 var fs = require('../utils/fs');
 var File = require('../utils/file');
 var log = require('../utils/log');
+var es6ify = require('es6ify');
 
 function Browserify(location, destination, options){
     this.location = location;
@@ -74,7 +75,8 @@ Browserify.prototype.file = function(fileObj, browserSync) {
 
 Browserify.prototype.bundle = function(b, fileObj) {
     var b_ws = fs.createWriteStream(path.resolve(this.destination, fileObj.name));
-    b.bundle().pipe(b_ws);
+    b.add(es6ify.runtime).bundle().pipe(b_ws);
+
     return new Promise(function(resolve, reject) {
         b_ws.end = function(){
             log.info(fileObj.name + ' saved');
